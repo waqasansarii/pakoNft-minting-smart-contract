@@ -1,4 +1,5 @@
 const hre = require("hardhat");
+require("@nomiclabs/hardhat-etherscan");
 const keccak256 = require("keccak256");
 const { default: MerkleTree } = require("merkletreejs");
 
@@ -16,12 +17,10 @@ async function main() {
   let tree = new MerkleTree(leaves, keccak256, { sortPairs: true });
   let root = tree.getRoot();
 
-  const pakoNft = await ethers.getContractFactory("PakoNFT");
-  const pako = await pakoNft.deploy(uri, root, proxyAddressRinkyby);
-
-  await pako.deployed();
-
-  console.log("Lock with 1 ETH deployed to:", pako.address);
+  await hre.run("verify:verify", {
+    address: "0x226a1c8dFfD5772160619A942F5C087B2D7e48ac",
+    constructorArguments: [uri, root, proxyAddressRinkyby],
+  });
 }
 
 // We recommend this pattern to be able to use async/await everywhere
